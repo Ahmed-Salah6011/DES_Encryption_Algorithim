@@ -150,8 +150,8 @@ class DES():
 
     def initial_permutation(self,plain):
         #takes plain text as vector (if matrix we will convert it) and returns matrix 
-        plain=plain.reshape((1,-1))[0]
-        plain = plain.reshape((8,8))
+        # plain=plain.reshape((1,-1))[0]
+        # plain = plain.reshape((8,8))
         matrix = np.zeros((8,8),dtype="int")
 
         l=[2,4,6,8,1,3,5,7]
@@ -165,8 +165,8 @@ class DES():
 
     def initial_permutation_inverse(self,cipher):
         #takes cipher text as vector (if matrix we will convert it) and returns matrix 
-        cipher=cipher.reshape((1,-1))[0]
-        cipher = cipher.reshape((8,8))
+        # cipher=cipher.reshape((1,-1))[0]
+        # cipher = cipher.reshape((8,8))
         matrix = np.zeros((8,8),dtype="int")
 
         l=[2,4,6,8,1,3,5,7]
@@ -222,7 +222,7 @@ class DES():
         return matrix
 
     def permutaion(self,R):
-        #takes the key as vector (if matrix we will convert it) not matrix and returns matrix
+        #takes vector (if matrix we will convert it) not matrix and returns matrix
         R=R.reshape((1,-1))[0]
         matrix= np.zeros_like(self.p,dtype="int")
         for r in range(len(self.p)):
@@ -303,10 +303,10 @@ class DES():
         L= IP[:4]
         R= IP[4:]
 
-        Keys=self.generate_key(Key)[::-1]
+        Keys=self.generate_key(Key)
 
         for i in range(16):
-            L,R= self.round(L,R,Keys[i])
+            L,R= self.round(L,R,Keys[-(i+1)])
         
         L,R= self.swap(L,R) #Round 17 Swapping
         plain= np.zeros((8,8),dtype="int")
@@ -380,12 +380,14 @@ if __name__ == "__main__":
     key= prepare_text(key)
 
     des=DES()
-    for _ in range(num_times):
+    for k in range(num_times):
         if mode:
             plain = des.encrypt(plain,key)
-            plain=np.array(np.logical_not(plain),dtype="int" )
+            if k == num_times-1:
+                plain=np.array(np.logical_not(plain),dtype="int" )
         else:
-            plain=np.array(np.logical_not(plain),dtype="int" )
+            if k==0:
+                plain=np.array(np.logical_not(plain),dtype="int" )
             plain = des.decrypt(plain,key)
 
     
